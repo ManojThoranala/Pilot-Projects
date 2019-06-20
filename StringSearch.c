@@ -7,15 +7,21 @@
         1. Accept the string and pattern string to be serached from the user
         2. Count the number of characters in the Pattern using for loop unitl it reaches '\n' in the strings
         3. For loop to iterate through each element in the given string
-        4. one more for loop inside the loop at step 3 to iterate the pattern string and condition for loop is to have the
+        4. one more for loop inside the loop at step 3 to iterate the pattern string and condition for loop is to match the charaters between
+            string and pattern
+        5. Decrement the count while for loop continues and once the count
+        6. Once the count reaches zero the outer loop iterator value i is the index at which the pattern is found in the strings.
+            Store i value in global variable index array and also increment occurance count of the pattern.
+        7. The function returns the pattern character count value if succedded and zero if failed
+        8. The main function iterates through the index array and prints the information such as occurance count and occurance indexes
 ***********************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
 
-/*******************************************************
-*String Search
-********************************************************/
+/*******************************************************************
+*String Search function and this returns integer type of pattern string charater count 
+*********************************************************************/
 int str_index[256];
 int occ_count = 0;
 int string_search (char * search_str, char * string)
