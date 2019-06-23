@@ -90,7 +90,7 @@ int is_digit(char p)
     }
 }
 
-/**********************************************/
+/****************Function to validate right square brace******************/
 int is_right_sq(char p)
 {
     if (p == ']')
@@ -103,7 +103,7 @@ int is_right_sq(char p)
     }
 }
 
-/****************************************/
+/**************Function to validate left square brace****************/
 
 int is_left_sq(char p)
 {
@@ -116,7 +116,8 @@ int is_left_sq(char p)
         return 0;
     }
 }
-/******************************************* */
+
+/*****************Funtion to validate matrix which is in string input*******************/
 
 int validate_matrix(char *matrix)
 {
@@ -153,7 +154,7 @@ int validate_matrix(char *matrix)
     return error;
 }
 
-/**************************************/
+/****************Function to parse the string to matrx format****************/
 int parse_matrix(char *matrix)
 {
     double * arr_ptr = matrix_arr;
@@ -228,6 +229,7 @@ int parse_matrix(char *matrix)
     return 1;
 }
 
+/*******************Main*********************/
 void main()
 {
     char *matrix_str;
