@@ -25,7 +25,7 @@ Program for providing calculator operations.
 int MAXSIZE = 256;
 int operator_stack[256];
 int operator_top = -1;
-int operand_stack[256];
+double operand_stack[256];
 int operand_top = -1;
 int history_size = 10;
 int op_error = 0;
@@ -127,6 +127,17 @@ char operator_push(char data)
         return 0.0;
     }
 }
+
+/****************************************
+*Data structure to stotre the 
+history of calculator operations
+*****************************************/
+typedef struct node{
+	char * exprn;
+	double result;
+	struct * next;
+	struct * prev;
+}history_node;	
 /****************************************
 *validate left paranthesis
 ****************************************/
@@ -238,7 +249,7 @@ int get_precedence(char ch)
 **********************************************************/
 int is_precedence_valid(char op_next, char op_prev)
 {
-    if (get_precedence(op_next) > get_precedence(op_prev))
+    if (get_precedence(op_next) >= get_precedence(op_prev))
     {
         return 1;
     }
@@ -251,11 +262,28 @@ int is_precedence_valid(char op_next, char op_prev)
 ********************************************/
 int is_unary(char * ch)
 {
-    if (* ch == '-' && is_digit(* (ch + 1)))
+    if (* ch == '-' && (is_digit(* (ch + 1)) || is_left_parantheses(* (ch + 1)))){
         return 1;
-    else
+	}
+    else{
         return 0;
+	}
 }
+
+/*******************************************
+*sqrt operator detection
+********************************************/
+int is_sqrt(char * ch)
+{
+	if (* ch == '$' && (is_digit(* (ch + 1)) || is_operator(* (ch-1)) || is_left_parantheses(* (ch + 1)))){
+		return 1;
+	}
+	else{
+		return 0;
+	}
+	
+}
+
 
 /******************************************************
 *Grab the operand in p, put it in operand stack,
@@ -269,7 +297,7 @@ int calc_exprn(char *p)
     char *op_ptr = op;
     while (*p != '\n')
     {
-        if (is_operator(*p) || is_digit(*p) || is_left_parantheses(*p) || is_right_parantheses(*p))
+        if (is_operator(* p) || is_digit(* p) || is_left_parantheses(* p) || is_right_parantheses(* p))
         {
             //"if" condition to take the negative numbers and not to mistaken by normal subtraction operation
             if (is_digit(*p) || (is_unary(p) && operand_top == -1)|| (is_operator(*(p - 1)) && is_unary(p)))
@@ -304,7 +332,8 @@ int calc_exprn(char *p)
                     else
                     {
                         char operator= operator_pop();
-                        double operand2 = operand_pop(), operand1;
+                        double operand2 = operand_pop();
+						double operand1;
                         if (operator == '$'){
                             operand1 = 0.0;
                             if (!op_error || !opnd_error){
@@ -341,14 +370,14 @@ int calc_exprn(char *p)
                 }
             }
             else if (is_left_parantheses(* p)){
-                operand_push(*p);
+                operator_push(* p);
             }
             else if (is_right_parantheses(* p)){
-                double operand2, operand1;
-                operand2 = operand_pop();
-                while (is_left_parantheses(operand2))
-                {
-                    char operator = operator_pop();
+                while (1){
+					double operand2, operand1;
+					char operator = operator_pop();
+					if (is_left_parantheses(operator)) break;
+					operand2 = operand_pop();
                     if (operator == '$'){
                         operand1 = 0.0;
                         if (!op_error || !opnd_error){
@@ -426,19 +455,19 @@ int is_valid_exprn(char *p)
     int right_parantheses = 0;
     int left_parantheses = 0;
     int error = 0;
-    if (is_operator(*p) && !is_unary(p))
+    if (is_operator(*p) && !is_unary(p) && !is_sqrt(p))
     {
         printf("Invalid Expression: Expression starting with non unary operator\n");
         error = 1;
     }
     while (*p != '\n'){
-        if (is_digit(*p) || is_operator(*p) || is_left_parantheses(*p) || is_right_parantheses(*p))
+        if (is_digit(* p) || is_operator(* p) || is_left_parantheses(* p) || is_right_parantheses(* p))
         {
-            if (is_left_parantheses(*p))
+            if (is_left_parantheses(* p))
             {
                 left_parantheses++;
             }
-            if (is_right_parantheses(*p))
+            if (is_right_parantheses(* p))
             {
                 right_parantheses++;
             }
@@ -447,27 +476,26 @@ int is_valid_exprn(char *p)
                 printf("Invlaid Expression: Right Parenthesis found before Left Parenthesis\n");
                 error = 1;
             }
-            if (is_operator(*p) && is_operator(*(p + 1)) && *p == *(p + 1) && *p != '$')
+            if (is_operator(* p) && is_operator(* (p + 1)) && * p == * (p + 1) && !is_sqrt(p))
             {
                 printf("Invalid Expression: Multiple operator '%s' found in the expression.\n", p);
                 error = 1;
             }
-            if (is_operator(*p) && is_operator(*(p + 1)) && !is_unary(p + 1) && *(p + 1)!= '$')
+            if (is_operator(* p) && is_operator(* (p + 1)) && !is_unary(p + 1) && !is_sqrt(p + 1))
             {
                 printf("Invalid Expression: Multiple operators '%s%s' found in the expression.\n", p, (p + 1));
                 error = 1;
             }
-            p++;
+            
         }
         else if (*p == ' '){
-            p++;
-            continue;
+			;
         }
         else{
             printf("Invalid Expression: Unsupported Characters Found in the Expression.\n");
-            p++;
             error = 1;
         }
+		p++;
     }
     if (left_parantheses != right_parantheses){
         printf("Invalid Expression: Expression having mismatch in left and right parantheses.\n");
@@ -486,22 +514,25 @@ int is_valid_exprn(char *p)
 int main()
 {
     char in[256];
-    double result;
+    double result = 0.0;
     //prompts user for input after each calculation and typing quit on to console will exit the program.
     while (1)
     {
         op_error = 0;
         opnd_error = 0;
         calc_err = 0;
+		result = 0.0;
         // Read input from user
-        printf("Enter expression below or Type 'quit' to exit.\n");
+        printf("Enter expression below or Type 'quit' to exit.\n\n");
         printf(">> ");
-        fgets(in, 256, stdin);
+        if (!fgets(in, 256, stdin)){
+			break;
+		}
         if (strncmp(in, "quit", 4) == 0)
             break;
         if (strncmp(in, "hist", 4) == 0){
             printf("Below are the recent %d operations performed", history_size);
-
+			
         }
         // Perform calculations
         if (is_valid_exprn(in))
@@ -518,7 +549,7 @@ int main()
             continue;
         }
         result = operand_pop();
-        printf("Result of the Expression is - \n");
-        printf("%.3lf\n", result);
+        printf("Result of the Expression is:\n");
+        printf("%.3lf\n\n\n", result);
     }
 }
