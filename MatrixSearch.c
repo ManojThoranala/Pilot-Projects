@@ -11,6 +11,14 @@ ALGORITHM:
         4. if the sum value matches then it prints the matrix and it's base index
 /**********************************************/
 
+/******************************************************************
+Program for providing calculator operations.
+*******************************************************************
+*File Name : MatrixSearch.c
+*Date : 14/06/2019
+*Author : Manoj T M
+*******************************************************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
