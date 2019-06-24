@@ -251,7 +251,7 @@ int get_precedence(char ch)
 **********************************************************/
 int is_precedence_valid(char op_next, char op_prev)
 {
-    if ((get_precedence(op_next) > get_precedence(op_prev)) || (is_left_parantheses(op_prev ) && (op_next == '$')))
+    if ((get_precedence(op_next) > get_precedence(op_prev))
     {
         return 1;
     }
@@ -262,9 +262,9 @@ int is_precedence_valid(char op_next, char op_prev)
 /*******************************************
 *unary operator detection
 ********************************************/
-int is_unary(char *ch)
+int is_unary(char ch)
 {
-    if (*ch == '-' && (is_digit(*(ch + 1)) || is_left_parantheses(*(ch + 1))))
+    if (ch == '-')
     {
         return 1;
     }
@@ -277,9 +277,9 @@ int is_unary(char *ch)
 /*******************************************
 *sqrt operator detection
 ********************************************/
-int is_sqrt(char *ch)
+int is_sqrt(char ch)
 {
-    if (*ch == '$' && (is_digit(*(ch + 1)) || is_operator(*(ch - 1)) || is_left_parantheses(*(ch + 1))))
+    if (ch == '$')
     {
         return 1;
     }
@@ -306,12 +306,12 @@ int calc_exprn(char *p)
         {
             //"if" condition to take the negative numbers and not to mistaken by normal subtraction operation
 
-            if (is_digit(*p) || (is_unary(p) && operand_top == -1) || (is_operator(*(p - 1)) && is_unary(p)))
+            if (is_digit(*p) || is_unary(*p))
             {
                 memset(op, 0, sizeof(char) * 100);
                 op = op_ptr;
                 dot_count = 0;
-                while (is_digit(*p) || is_unary(p))
+                while (is_digit(*p) || is_unary(*p))
                 {
                     *op = *p;
                     if (*p == '.')
@@ -339,7 +339,7 @@ int calc_exprn(char *p)
             //operator extraction and push to stack
             if (is_operator(*p))
             {
-                if (operator_top >= 0)
+                if (operator_top >= 0 && !is_left_paratheses(operator_stack[operator_top]))
                 {
                     if (is_precedence_valid(*p, operator_stack[operator_top]))
                     {
@@ -494,7 +494,7 @@ int is_valid_exprn(char *p)
     int right_parantheses = 0;
     int left_parantheses = 0;
     int error = 0;
-    if (is_operator(*p) && !is_unary(p) && !is_sqrt(p))
+    if (is_operator(*p) && !is_unary(*p) && !is_sqrt(*p))
     {
         printf("Invalid Expression: Expression starting with non unary operator\n");
         error = 1;
@@ -516,12 +516,12 @@ int is_valid_exprn(char *p)
                 printf("Invlaid Expression: Right Parenthesis found before Left Parenthesis\n");
                 error = 1;
             }
-            if (is_operator(*p) && is_operator(*(p + 1)) && *p == *(p + 1) && !is_sqrt(p))
+            if (is_operator(*p) && is_operator(*(p + 1)) && *p == *(p + 1) && !is_sqrt(*p))
             {
                 printf("Invalid Expression: Multiple operator '%s' found in the expression.\n", p);
                 error = 1;
             }
-            if (is_operator(*p) && is_operator(*(p + 1)) && !is_unary(p + 1) && !is_sqrt(p + 1))
+            if (is_operator(*p) && is_operator(*(p + 1)) && !is_unary (*(p + 1)) && !is_sqrt(*(p + 1)))
             {
                 printf("Invalid Expression: Multiple operators '%s%s' found in the expression.\n", p, (p + 1));
                 error = 1;
