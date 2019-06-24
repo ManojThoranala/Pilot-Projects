@@ -1,7 +1,10 @@
 /*****************************************************************
 ALGORITHM:
-1. Accept the expression from the user  and validate the expression to check feasibility
-2. preprocess the input expression to remove spaces
+	1. Accept the expression from the user and validate the expression to check feasibility
+	2. The expression is sent to calculate expression function where the operators and operands are extracted 
+	   and stored in user created stacks (arrays)- stacks are implemented with push and pop functions
+	3. The function in step2 calls function to perform operation according to the precedence of operators
+	4. The result at the end is printed.
 
 ******************************************************************/
 
@@ -224,14 +227,10 @@ int get_precedence(char ch)
     switch (ch)
     {
     case '+':
-        precedence = 0;
-        break;
     case '-':
         precedence = 0;
         break;
     case '*':
-        precedence = 1;
-        break;
     case '/':
         precedence = 1;
         break;
@@ -295,17 +294,26 @@ int calc_exprn(char *p)
     char *op;
     op = malloc(100 * sizeof(char));
     char *op_ptr = op;
+    int dot_count = 0;
     while (*p != '\n')
     {
         if (is_operator(* p) || is_digit(* p) || is_left_parantheses(* p) || is_right_parantheses(* p))
         {
             //"if" condition to take the negative numbers and not to mistaken by normal subtraction operation
+		
             if (is_digit(*p) || (is_unary(p) && operand_top == -1)|| (is_operator(*(p - 1)) && is_unary(p)))
             {
                 memset(op, 0, sizeof(char) * 100);
                 op = op_ptr;
+		dot_count = 0
                 while (is_digit(*p) || is_unary(p))
                 {   *op = *p;
+		    if (* p == '.'){
+			if (dot_count > 1){
+		    	    break;
+		        }
+		        else dot_count++;
+		    }
                     if (is_digit(*(p + 1)))
                     {
                         op++;
