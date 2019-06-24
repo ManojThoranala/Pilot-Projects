@@ -251,7 +251,7 @@ int get_precedence(char ch)
 **********************************************************/
 int is_precedence_valid(char op_next, char op_prev)
 {
-    if (get_precedence(op_next) > get_precedence(op_prev))
+    if ((get_precedence(op_next) > get_precedence(op_prev)) || (is_left_parantheses(op_prev ) && (op_next == '$')))
     {
         return 1;
     }
