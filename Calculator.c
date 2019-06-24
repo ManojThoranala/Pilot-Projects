@@ -138,8 +138,8 @@ history of calculator operations
 typedef struct node{
 	char * exprn;
 	double result;
-	struct * next;
-	struct * prev;
+	struct node * next;
+	struct node * prev;
 }history_node;	
 /****************************************
 *validate left paranthesis
@@ -248,7 +248,7 @@ int get_precedence(char ch)
 **********************************************************/
 int is_precedence_valid(char op_next, char op_prev)
 {
-    if (get_precedence(op_next) >= get_precedence(op_prev))
+    if (get_precedence(op_next) > get_precedence(op_prev))
     {
         return 1;
     }
@@ -290,7 +290,7 @@ int is_sqrt(char * ch)
 *******************************************************/
 int calc_exprn(char *p)
 {
-    printf("Calculating the Expression:\n");
+    printf("Calculating the Expression ...\n");
     char *op;
     op = malloc(100 * sizeof(char));
     char *op_ptr = op;
@@ -305,7 +305,7 @@ int calc_exprn(char *p)
             {
                 memset(op, 0, sizeof(char) * 100);
                 op = op_ptr;
-		dot_count = 0
+		dot_count = 0;
                 while (is_digit(*p) || is_unary(p))
                 {   *op = *p;
 		    if (* p == '.'){
@@ -459,7 +459,7 @@ int calc_exprn(char *p)
 *********************************************/
 int is_valid_exprn(char *p)
 {
-    printf("Validating the given Expression:\n");
+    printf("Validating the given Expression ...\n");
     int right_parantheses = 0;
     int left_parantheses = 0;
     int error = 0;
@@ -561,3 +561,4 @@ int main()
         printf("%.3lf\n\n\n", result);
     }
 }
+
