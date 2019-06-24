@@ -262,9 +262,9 @@ int is_precedence_valid(char op_next, char op_prev)
 /*******************************************
 *unary operator detection
 ********************************************/
-int is_unary(char ch)
+int is_unary(char ch, char ch_prev)
 {
-    if (ch == '-')
+    if (((ch == '-' ||  ch == '+')&& is_operator(ch_prev)) ||((ch == '-' ||  ch == '+') && is_left_parantheses(ch_prev)) || ((ch == '-' ||  ch == '+') && ch_prev = '0')
     {
         return 1;
     }
@@ -277,9 +277,9 @@ int is_unary(char ch)
 /*******************************************
 *sqrt operator detection
 ********************************************/
-int is_sqrt(char ch)
+int is_sqrt(char ch, char ch_prev)
 {
-    if (ch == '$')
+    if ((ch == '$' && is_operator(ch_prev)) ||(ch = '$' && is_left_parantheses(ch_prev)) || (ch == '$' && ch_prev = '0')
     {
         return 1;
     }
@@ -304,14 +304,12 @@ int calc_exprn(char *p)
     {
         if (is_operator(*p) || is_digit(*p) || is_left_parantheses(*p) || is_right_parantheses(*p))
         {
-            //"if" condition to take the negative numbers and not to mistaken by normal subtraction operation
-
-            if (is_digit(*p) || is_unary(*p))
+            if (is_digit(*p))
             {
                 memset(op, 0, sizeof(char) * 100);
                 op = op_ptr;
                 dot_count = 0;
-                while (is_digit(*p) || is_unary(*p))
+                while (is_digit(*p))
                 {
                     *op = *p;
                     if (*p == '.')
@@ -494,7 +492,7 @@ int is_valid_exprn(char *p)
     int right_parantheses = 0;
     int left_parantheses = 0;
     int error = 0;
-    if (is_operator(*p) && !is_unary(*p) && !is_sqrt(*p))
+    if (is_operator(*p) && !is_unary(*p, *(p-1)) && !is_sqrt(*p, *(p-1)))
     {
         printf("Invalid Expression: Expression starting with non unary operator\n");
         error = 1;
@@ -516,12 +514,12 @@ int is_valid_exprn(char *p)
                 printf("Invlaid Expression: Right Parenthesis found before Left Parenthesis\n");
                 error = 1;
             }
-            if (is_operator(*p) && is_operator(*(p + 1)) && *p == *(p + 1) && !is_sqrt(*p))
+            if (is_operator(*p) && is_operator(*(p + 1)) && *p == *(p + 1) && !is_unary(*p, *(p-1)))
             {
                 printf("Invalid Expression: Multiple operator '%s' found in the expression.\n", p);
                 error = 1;
             }
-            if (is_operator(*p) && is_operator(*(p + 1)) && !is_unary (*(p + 1)) && !is_sqrt(*(p + 1)))
+            if (is_operator(*p) && is_operator(*(p + 1)) && !is_unary (*(p + 1), *p) && !is_sqrt(*(p + 1), *p))
             {
                 printf("Invalid Expression: Multiple operators '%s%s' found in the expression.\n", p, (p + 1));
                 error = 1;
