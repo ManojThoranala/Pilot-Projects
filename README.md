@@ -1,2 +1,2 @@
 # Pilot-Projects
-Kick Start Programs in C, Python, C++.
+Kick Start Programs in C, Python, C++, Shell Scripts.
