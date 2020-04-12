@@ -2,8 +2,6 @@
 # !/bin/bash
 # Date: 05/07/2019
 # Author: Manoj T M
-# Org: PathPartner Technology
-echo "_________________________Linux_Assignment_3_4______________________________"
 echo "Hi, See below to know whose marks are missing in the file."
 val=4
 echo -e "\n"
