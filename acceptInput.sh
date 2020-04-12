@@ -1,8 +1,6 @@
 # !/bin/bash
 # Date: 04/07/2019
 # Author: Manoj T M
-# Org: PathPartner Technology
-echo "_________________________Linux_Assignment_3_2______________________________"
 echo "---------------Accepting Input from the user-------------"
 i=0
 echo -e "\n"
